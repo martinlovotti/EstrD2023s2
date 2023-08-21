@@ -203,7 +203,7 @@ En Haskell ya está definida como ||
 
 oBien :: Bool -> Bool -> Bool
 oBien True _ = True
-oBien _ False = False
+oBien _ b = b
 --RESUELTO
 
 {-4. Registros

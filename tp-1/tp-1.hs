@@ -51,12 +51,12 @@ Dada una dirección devuelve su opuesta.
 data Dir = Norte | Este | Sur | Oeste
 
 opuesto :: Dir -> Dir
-opuesto x =
-    case x of
-        Norte -> Sur
-        Este -> Oeste
-        Sur -> Norte
-        Oeste -> Este
+opuesto     Norte = Sur
+opuesto     Este = Oeste
+opuesto     Sur = Norte
+opuesto     Oeste = Este
+--RESUELTO
+
 {-
 b) iguales :: Dir -> Dir -> Bool
 Dadas dos direcciones, indica si son la misma. Nota: utilizar pattern matching y no ==.
@@ -75,12 +75,11 @@ la siguiente dirección a Oeste. ¾Posee una precondición esta función? ¾Es u
 total o parcial? ¾Por qué?
 -}
 siguiente :: Dir -> Dir
-siguiente d =
-    case d of
-        Norte -> Este
-        Este -> Sur
-        Sur -> Oeste
-        Oeste -> Norte
+siguiente Norte = Este
+siguiente Este = Sur
+siguiente Sur = Oeste
+siguiente Oeste = Norte
+--resuelto
 
 {-
 Definir el tipo de dato DiaDeSemana, con las alternativas Lunes, Martes, Miércoles, Jueves,
@@ -91,20 +90,29 @@ Devuelve un par donde la primera componente es el primer día de la semana, y la
 segunda componente es el último día de la semana. Considerar definir subtareas útiles
 que puedan servir después.-}
 
-data DiaDeSemana = Lunes | Martes | Miercoles | Jueves | Viernes | Sabado | Domingo
+data DiaDeSemana = Lunes | Martes | Miercoles | Jueves | Viernes | Sabado | Domingo deriving Show
 
-primeroYUltimoDia :: (DiaDeSemana, DiaDeSemana)
-primeroYUltimoDia = (Lunes, Domingo)
+primeroYUltimoDia :: (DiaDeSemana, DiaDeSemana) -> (DiaDeSemana, DiaDeSemana) 
+primeroYUltimoDia (x, y) = (primerDia x, ultimoDia y)
+
+primerDia :: DiaDeSemana -> DiaDeSemana {-Subtarea para primeroYUltimoDia -}
+primerDia _ = Lunes
+
+ultimoDia :: DiaDeSemana -> DiaDeSemana {-Subtarea para primeroYUltimoDia -}
+ultimoDia _ = Domingo
+
+
 
 {-
 b) empiezaConM :: DiaDeSemana -> Bool
 Dado un día de la semana indica si comienza con la letra M.
 -}
 empiezaConM :: DiaDeSemana -> Bool
-empiezaConM dia = case dia of
-    Martes -> True
-    Miercoles -> True
-    _ -> False
+empiezaConM Martes = True
+empiezaConM Miercoles = True
+empiezaConM _ = False
+--RESUELTO
+
 
 {-
 c) vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
@@ -113,14 +121,34 @@ la calidad de la solución respecto de la cantidad de casos analizados (entre lo
 analizados en esta y cualquier subtarea, deberían ser no más de 9 casos).-}
 
 vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
-vieneDespues Lunes Domingo = True
-vieneDespues Martes Lunes = True
-vieneDespues Miercoles Martes = True
-vieneDespues Jueves Miercoles = True
-vieneDespues Viernes Jueves = True
-vieneDespues Sabado Viernes = True
-vieneDespues Domingo Sabado = True
-vieneDespues _ _ = False
+vieneDespues Lunes _ = False
+vieneDespues Martes d = esLunes d
+vieneDespues Miercoles d = esLunes d || esMartes d
+vieneDespues Jueves d = esLunes d || esMartes d || esMiercoles d
+vieneDespues Viernes d = esLunes d || esMartes d || esMiercoles d || esJueves d
+vieneDespues Sabado d = esLunes d || esMartes d || esMiercoles d || esJueves d || esViernes d
+vieneDespues Domingo _ = True
+
+esLunes :: DiaDeSemana -> Bool
+esLunes Lunes = True
+esLunes _ = False
+
+esMartes :: DiaDeSemana -> Bool
+esMartes Martes = True
+esMartes _ = False
+
+esMiercoles :: DiaDeSemana -> Bool
+esMiercoles Miercoles = True
+esMiercoles _ = False
+
+esJueves :: DiaDeSemana -> Bool
+esJueves Jueves = True
+esJueves _ = False
+
+esViernes :: DiaDeSemana -> Bool
+esViernes Viernes = True
+esViernes _ = False
+
 
 {-
 d) estaEnElMedio :: DiaDeSemana -> Bool
@@ -150,8 +178,10 @@ devuelve True.
 Esta función NO debe realizar doble pattern matching.
 Nota: no viene implementada en Haskell.-}
 implica :: Bool -> Bool -> Bool
-implica True False = False
-implica _ _ = True
+implica False _ = True
+implica _ False = False
+implica True _ = True
+--RESUELTO
 
 {-
 c) yTambien :: Bool -> Bool -> Bool
@@ -159,8 +189,10 @@ Dados dos booleanos si ambos son True devuelve True, sino devuelve False.
 Esta función NO debe realizar doble pattern matching.
 En Haskell ya está definida como \&\&.-}
 yTambien :: Bool -> Bool -> Bool
-yTambien True True = True
-iTambien _ _ = False
+yTambien False _ = False
+yTambien _ False = False
+yTambien _ _ = True
+--RESUELTO
 
 {-
 d) oBien :: Bool -> Bool -> Bool
@@ -171,8 +203,8 @@ En Haskell ya está definida como ||
 
 oBien :: Bool -> Bool -> Bool
 oBien True _ = True
-oBien _ True = True
-oBien _ _ = False
+oBien _ False = False
+--RESUELTO
 
 {-4. Registros
 1. Definir el tipo de dato Persona, como un nombre y la edad de la persona. Realizar las
@@ -220,11 +252,11 @@ laQueEsMayor persona1 persona2 = if edad persona1 > edad persona2
 porcentaje de energía; y Entrenador, como un nombre y dos Pokémon. Luego definir las
 siguientes funciones:-}
 
-data TipoDePokemon = Agua | Fuego | Planta deriving (Eq, Show)
+data TipoDePokemon = Agua | Fuego | Planta deriving Show
  
-data Pokemon = Poke TipoDePokemon Int deriving (Eq, Show)
+data Pokemon = Poke TipoDePokemon Int deriving Show
  
-data Entrenador = E String Pokemon Pokemon deriving (Eq, Show)
+data Entrenador = E String Pokemon Pokemon deriving Show
  
 tipo :: Pokemon -> TipoDePokemon
 tipo (Poke t e) = t
@@ -235,32 +267,62 @@ pok1 (E n p1 p2) = p1
 pok2 :: Entrenador -> Pokemon
 pok2 (E n p1 p2) = p2
 
-poke1 = Poke Agua 22
+poke1 = Poke Planta 22
 poke2 = Poke Fuego 21
+poke3 = Poke Agua 1
+poke4 = Poke Agua 11
+
 
 yiy = E "Yiyo" poke1 poke2
-tito= E "Tito" poke1 poke2
+tito= E "Tito" poke3 poke4
+
+tipo_GanaA_ :: TipoDePokemon -> TipoDePokemon -> Bool
+tipo_GanaA_ Agua Fuego = True
+tipo_GanaA_ Fuego Planta = True 
+tipo_GanaA_ Planta Agua = True 
+tipo_GanaA_ _ _ = False
+--FUNC SUBTAREA PARA superaA
+
 superaA :: Pokemon -> Pokemon -> Bool
 --Dados dos Pokémon indica si el primero, en base al tipo, es superior al segundo. Agua
 --supera a fuego, fuego a planta y planta a agua. Y cualquier otro caso es falso.
-superaA (Poke Agua _) (Poke Fuego _) = True
-superaA (Poke Fuego _) (Poke Planta _) = True
-superaA (Poke Planta _) (Poke Agua _) = True
-superaA _ _ = False
+superaA (Poke t e) (Poke t2 e2) = tipo_GanaA_ t t2
+--RESUELTO
 
-contarTipo :: TipoDePokemon -> Pokemon -> Int
-contarTipo tip (Poke t e) =
-        if t == tip
-            then 1 
-            else 0
+
 
 cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
-cantidadDePokemonDe tipoBuscado (E n p p2) =
-    contarTipo tipoBuscado p + contarTipo tipoBuscado p2
-  
+cantidadDePokemonDe tipoBuscado (E n p p2) = sumarPokemon tipoBuscado p + sumarPokemon tipoBuscado p2
+
+sumarPokemon :: TipoDePokemon -> Pokemon -> Int
+sumarPokemon Planta (Poke t e) = contarTipoPlanta t
+sumarPokemon Fuego (Poke t e) = contarTipoFuego t
+sumarPokemon Agua (Poke t e) = contarTipoAgua t
+sumarPokemon _ _ = 0 
+
+contarTipoFuego :: TipoDePokemon -> Int
+contarTipoFuego Fuego = 1
+contarTipoFuego _ = 0
+
+contarTipoAgua :: TipoDePokemon -> Int
+contarTipoAgua Agua = 1
+contarTipoAgua _ = 0
+
+contarTipoPlanta :: TipoDePokemon -> Int
+contarTipoPlanta Planta = 1
+contarTipoPlanta _ = 0
+
+
+
+listaDeEntrenador :: Entrenador -> [Pokemon]
+listaDeEntrenador (E n p p2) = [p,p2] 
+--FUNC AUX para juntarPokemon
+
 juntarPokemon :: (Entrenador, Entrenador) -> [Pokemon]
 --Dado un par de entrenadores, devuelve a sus Pokémon en una lista.
-juntarPokemon (E n p1 p2, E n2 p3 p4) = [p1,p2,p3,p4]
+juntarPokemon (e1, e2) = listaDeEntrenador e1 ++ listaDeEntrenador e2
+--RESUELTO
+
 
 {-
 5. Funciones polimórcas
@@ -271,7 +333,9 @@ loMismo d = d
 
 siempreSiete :: a -> Int
 --Dado un elemento de algún tipo devuelve el número 7.
-siempreSiete x = 7
+siempreSiete _ = 7
+--RESUELTO
+
 
 swap :: (a,b) -> (b, a)
 --Dadas una tupla, invierte sus componentes.
@@ -289,7 +353,9 @@ estaVacia :: [a] -> Bool
 --Dada una lista de elementos, si es vacía devuelve True, sino devuelve False.
 --Denida en Haskell como null.
 estaVacia [] = True
-estaVacia (_)  = False
+estaVacia _  = False
+--RESUELTO
+
 
 elPrimero :: [a] -> a
 --Dada una lista devuelve su primer elemento.
@@ -299,9 +365,10 @@ elPrimero (x:_) = x
 sinElPrimero :: [a] -> [a]
 --Dada una lista devuelve esa lista menos el primer elemento.
 --Denida en Haskell como tail.
-sinElPrimero (_:x)= (x)
+sinElPrimero (_:xs)= (xs)
+--RESUELTO
 
 splitHead :: [a] -> (a, [a])
 --Dada una lista devuelve un par, donde la primera componente es el primer elemento de la
 --lista, y la segunda componente es esa lista pero sin el primero.
-splitHead (x) = (elPrimero (x), sinElPrimero (x))
+splitHead (x) = (elPrimero x, sinElPrimero x)

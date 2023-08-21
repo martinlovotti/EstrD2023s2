@@ -281,7 +281,7 @@ tipo_GanaA_ Agua Fuego = True
 tipo_GanaA_ Fuego Planta = True 
 tipo_GanaA_ Planta Agua = True 
 tipo_GanaA_ _ _ = False
---FUNC SUBTAREA PARA superaA
+--FUNC SUBTAREA PARA superaA, dados 2 tipos devuelve un bool si el primero vence al segundo
 
 superaA :: Pokemon -> Pokemon -> Bool
 --Dados dos Pokémon indica si el primero, en base al tipo, es superior al segundo. Agua
@@ -292,22 +292,28 @@ superaA (Poke t e) (Poke t2 e2) = tipo_GanaA_ t t2
 
 
 cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
-cantidadDePokemonDe tipoBuscado (E n p p2) = sumarPokemon tipoBuscado p + sumarPokemon tipoBuscado p2
+cantidadDePokemonDe tipoBuscado (E n p p2) = sumarPokemon tipoBuscado p + sumarPokemon tipoBuscado p2 
+--va a sumar +1 en cada uno de los pokemones si su tipo matchea con el "tipoBuscado"
 
+
+--Subtarea: Dado un tipo de pokemon y un pokemon retorna 1 o 0 si este ultimo coincide con el tipo dado
 sumarPokemon :: TipoDePokemon -> Pokemon -> Int
 sumarPokemon Planta (Poke t e) = contarTipoPlanta t
 sumarPokemon Fuego (Poke t e) = contarTipoFuego t
 sumarPokemon Agua (Poke t e) = contarTipoAgua t
 sumarPokemon _ _ = 0 
 
+--Subtarea: Dado un tipo de pokemon si es de fuego retorna 1 sino 0
 contarTipoFuego :: TipoDePokemon -> Int
 contarTipoFuego Fuego = 1
 contarTipoFuego _ = 0
 
+--Subtarea: Dado un tipo de pokemon si es de agua retorna 1 sino 0
 contarTipoAgua :: TipoDePokemon -> Int
 contarTipoAgua Agua = 1
 contarTipoAgua _ = 0
 
+--Subtarea: Dado un tipo de pokemon si es de planta retorna 1 sino 0
 contarTipoPlanta :: TipoDePokemon -> Int
 contarTipoPlanta Planta = 1
 contarTipoPlanta _ = 0
@@ -316,7 +322,7 @@ contarTipoPlanta _ = 0
 
 listaDeEntrenador :: Entrenador -> [Pokemon]
 listaDeEntrenador (E n p p2) = [p,p2] 
---FUNC AUX para juntarPokemon
+--FUNC AUX para juntarPokemon, dado un entrenador devuelve sus pokemones en una lista
 
 juntarPokemon :: (Entrenador, Entrenador) -> [Pokemon]
 --Dado un par de entrenadores, devuelve a sus Pokémon en una lista.

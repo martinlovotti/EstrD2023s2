@@ -48,7 +48,7 @@ Main> maxDelPar (divisionYResto (suma 25 25) (sucesor 4))
 a) opuesto :: Dir -> Dir
 Dada una dirección devuelve su opuesta.
 -}
-data Dir = Norte | Este | Sur | Oeste
+data Dir = Norte | Este | Sur | Oeste deriving Show
 
 opuesto :: Dir -> Dir
 opuesto     Norte = Sur
@@ -74,11 +74,14 @@ Dada una dirección devuelve su siguiente, en sentido horario, y suponiendo que 
 la siguiente dirección a Oeste. ¾Posee una precondición esta función? ¾Es una función
 total o parcial? ¾Por qué?
 -}
-siguiente :: Dir -> Dir
+
+siguiente :: Dir -> Dir  
+
+--PRECONDICION: Oeste no admite siguiente direccion
 siguiente Norte = Este
 siguiente Este = Sur
 siguiente Sur = Oeste
-siguiente Oeste = Norte
+siguiente Oeste = error "No hay siguiente para esta direccion"
 --resuelto
 
 {-

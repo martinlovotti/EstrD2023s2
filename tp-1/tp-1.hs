@@ -55,7 +55,7 @@ opuesto     Norte = Sur
 opuesto     Este = Oeste
 opuesto     Sur = Norte
 opuesto     Oeste = Este
---RESUELTO
+
 
 {-
 b) iguales :: Dir -> Dir -> Bool
@@ -111,7 +111,7 @@ empiezaConM :: DiaDeSemana -> Bool
 empiezaConM Martes = True
 empiezaConM Miercoles = True
 empiezaConM _ = False
---RESUELTO
+
 
 
 {-
@@ -121,34 +121,17 @@ la calidad de la solución respecto de la cantidad de casos analizados (entre lo
 analizados en esta y cualquier subtarea, deberían ser no más de 9 casos).-}
 
 vieneDespues :: DiaDeSemana -> DiaDeSemana -> Bool
-vieneDespues Lunes _ = False
-vieneDespues Martes d = esLunes d
-vieneDespues Miercoles d = esLunes d || esMartes d
-vieneDespues Jueves d = esLunes d || esMartes d || esMiercoles d
-vieneDespues Viernes d = esLunes d || esMartes d || esMiercoles d || esJueves d
-vieneDespues Sabado d = esLunes d || esMartes d || esMiercoles d || esJueves d || esViernes d
-vieneDespues Domingo _ = True
+vieneDespues d1 d2 = valorDelDia d1 > valorDelDia d2
 
-esLunes :: DiaDeSemana -> Bool
-esLunes Lunes = True
-esLunes _ = False
-
-esMartes :: DiaDeSemana -> Bool
-esMartes Martes = True
-esMartes _ = False
-
-esMiercoles :: DiaDeSemana -> Bool
-esMiercoles Miercoles = True
-esMiercoles _ = False
-
-esJueves :: DiaDeSemana -> Bool
-esJueves Jueves = True
-esJueves _ = False
-
-esViernes :: DiaDeSemana -> Bool
-esViernes Viernes = True
-esViernes _ = False
-
+--Cada dia tiene un valor asignado, para poder compararlo un dia de mayor valor esta dsps de uno de menor
+valorDelDia :: DiaDeSemana -> Int
+valorDelDia Lunes = 1
+valorDelDia Martes = 2
+valorDelDia Miercoles = 3
+valorDelDia Jueves = 4
+valorDelDia Viernes = 5
+valorDelDia Sabado = 6
+valorDelDia Domingo = 7
 
 {-
 d) estaEnElMedio :: DiaDeSemana -> Bool
@@ -179,9 +162,9 @@ Esta función NO debe realizar doble pattern matching.
 Nota: no viene implementada en Haskell.-}
 implica :: Bool -> Bool -> Bool
 implica False _ = True
-implica _ False = False
-implica True _ = True
---RESUELTO
+implica _ d = d
+
+
 
 {-
 c) yTambien :: Bool -> Bool -> Bool
@@ -190,9 +173,9 @@ Esta función NO debe realizar doble pattern matching.
 En Haskell ya está definida como \&\&.-}
 yTambien :: Bool -> Bool -> Bool
 yTambien False _ = False
-yTambien _ False = False
-yTambien _ _ = True
---RESUELTO
+yTambien _ x = x
+
+
 
 {-
 d) oBien :: Bool -> Bool -> Bool
@@ -204,7 +187,7 @@ En Haskell ya está definida como ||
 oBien :: Bool -> Bool -> Bool
 oBien True _ = True
 oBien _ b = b
---RESUELTO
+
 
 {-4. Registros
 1. Definir el tipo de dato Persona, como un nombre y la edad de la persona. Realizar las
@@ -287,37 +270,19 @@ superaA :: Pokemon -> Pokemon -> Bool
 --Dados dos Pokémon indica si el primero, en base al tipo, es superior al segundo. Agua
 --supera a fuego, fuego a planta y planta a agua. Y cualquier otro caso es falso.
 superaA (Poke t e) (Poke t2 e2) = tipo_GanaA_ t t2
---RESUELTO
 
 
 
 cantidadDePokemonDe :: TipoDePokemon -> Entrenador -> Int
-cantidadDePokemonDe tipoBuscado (E n p p2) = sumarPokemon tipoBuscado p + sumarPokemon tipoBuscado p2 
+cantidadDePokemonDe tipoBuscado (E n p p2) = sumarP tipoBuscado (tipo p) + sumarP tipoBuscado (tipo p2) 
 --va a sumar +1 en cada uno de los pokemones si su tipo matchea con el "tipoBuscado"
 
-
---Subtarea: Dado un tipo de pokemon y un pokemon retorna 1 o 0 si este ultimo coincide con el tipo dado
-sumarPokemon :: TipoDePokemon -> Pokemon -> Int
-sumarPokemon Planta (Poke t e) = contarTipoPlanta t
-sumarPokemon Fuego (Poke t e) = contarTipoFuego t
-sumarPokemon Agua (Poke t e) = contarTipoAgua t
-sumarPokemon _ _ = 0 
-
---Subtarea: Dado un tipo de pokemon si es de fuego retorna 1 sino 0
-contarTipoFuego :: TipoDePokemon -> Int
-contarTipoFuego Fuego = 1
-contarTipoFuego _ = 0
-
---Subtarea: Dado un tipo de pokemon si es de agua retorna 1 sino 0
-contarTipoAgua :: TipoDePokemon -> Int
-contarTipoAgua Agua = 1
-contarTipoAgua _ = 0
-
---Subtarea: Dado un tipo de pokemon si es de planta retorna 1 sino 0
-contarTipoPlanta :: TipoDePokemon -> Int
-contarTipoPlanta Planta = 1
-contarTipoPlanta _ = 0
-
+--Dados dos tipos de pokemones delvolvera 1 si son igual 0 sino
+sumarP :: TipoDePokemon -> TipoDePokemon -> Int
+sumarP Planta Planta = 1
+sumarP Fuego Fuego = 1
+sumarP Agua Agua = 1
+sumarP _ _ = 0
 
 
 listaDeEntrenador :: Entrenador -> [Pokemon]
@@ -327,7 +292,7 @@ listaDeEntrenador (E n p p2) = [p,p2]
 juntarPokemon :: (Entrenador, Entrenador) -> [Pokemon]
 --Dado un par de entrenadores, devuelve a sus Pokémon en una lista.
 juntarPokemon (e1, e2) = listaDeEntrenador e1 ++ listaDeEntrenador e2
---RESUELTO
+
 
 
 {-
@@ -340,7 +305,7 @@ loMismo d = d
 siempreSiete :: a -> Int
 --Dado un elemento de algún tipo devuelve el número 7.
 siempreSiete _ = 7
---RESUELTO
+
 
 
 swap :: (a,b) -> (b, a)
@@ -360,7 +325,7 @@ estaVacia :: [a] -> Bool
 --Denida en Haskell como null.
 estaVacia [] = True
 estaVacia _  = False
---RESUELTO
+
 
 
 elPrimero :: [a] -> a
@@ -372,7 +337,7 @@ sinElPrimero :: [a] -> [a]
 --Dada una lista devuelve esa lista menos el primer elemento.
 --Denida en Haskell como tail.
 sinElPrimero (_:xs)= (xs)
---RESUELTO
+
 
 splitHead :: [a] -> (a, [a])
 --Dada una lista devuelve un par, donde la primera componente es el primer elemento de la

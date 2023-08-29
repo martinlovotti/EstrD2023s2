@@ -52,20 +52,15 @@ sucesores (n:ns) = sucesor n : sucesores ns
 --4. conjuncion :: [Bool] -> Bool
 --Dada una lista de booleanos devuelve True si todos sus elementos son True.
 
-esTrue :: Bool -> Bool
-esTrue True = True
-esTrue _ = False
-
 conjuncion :: [Bool] -> Bool
 conjuncion [] = False
-conjuncion (x:[]) = esTrue x
-conjuncion (x:xs) = esTrue x && conjuncion xs 
+conjuncion (x:xs) = x && conjuncion xs --ARREGLADO
 
 --5.disyuncion :: [Bool] -> Bool
 --Dada una lista de booleanos devuelve True si alguno de sus elementos es True.
 disyuncion :: [Bool] -> Bool
 disyuncion [] = False
-disyuncion (x:xs) = esTrue x || disyuncion xs
+disyuncion (x:xs) = x || disyuncion xs --ARREGLADO
 
 --6. aplanar :: [[a]] -> [a]
 --Dada una lista de listas, devuelve una única lista con todos sus elementos.
@@ -79,17 +74,17 @@ aplanar (x:xs) = agregar x (aplanar xs)
 esIgual :: Eq a => a -> a -> Bool
 esIgual x y = x==y
 
-sumar1Si :: Bool -> Int
-sumar1Si True = 1
-sumar1Si False = 0
-
-
 pertenece :: Eq a => a -> [a] -> Bool
 pertenece x [] = False
-pertenece x (y:ys) = esIgual x y || pertenece x ys
+pertenece x (y:ys) = if x == y
+                     then True || pertenece x ys
+                     else pertenece x ys         --ARREGLADO
 
 --8 apariciones :: Eq a => a -> [a] -> Int
 --Dados un elemento e y una lista xs cuenta la cantidad de apariciones de e en xs.
+sumar1Si :: Bool -> Int
+sumar1Si True = 1
+sumar1Si False = 0
 
 apariciones :: Eq a => a -> [a] -> Int
 apariciones x [] = 0
@@ -100,13 +95,9 @@ apariciones x (y:ys) = sumar1Si (esIgual x y) + apariciones x ys
 
 losMenoresA :: Int -> [Int] -> [Int]
 losMenoresA x [] = []
-losMenoresA x (n:ns) = devolverMenorA x n ++ losMenoresA x ns
-
---Devuelve el numero solo si es mayor al comparado
-devolverMenorA :: Int -> Int -> [Int]
-devolverMenorA n n2 = if n > n2
-                      then [n2]
-                      else []
+losMenoresA x (n:ns) = if n < x
+                       then n : losMenoresA x ns
+                       else losMenoresA x ns     --ARREGLADO
                       
 --10. lasDeLongitudMayorA :: Int -> [[a]] -> [[a]]
 --Dados un número n y una lista de listas, devuelve la lista de aquellas listas que tienen más
@@ -162,9 +153,9 @@ Dada una lista devuelve el mínimo
 elMinimo :: Ord a => [a] -> a
 elMinimo [] = error "lista vacia"
 elMinimo [x] = x
-elMinimo (x:y:xs) = if x < y
-                  then elMinimo (x:xs)
-                  else elMinimo (y:xs)
+elMinimo (x:xs) = if x < elMinimo xs
+                  then x
+                  else elMinimo xs --ARREGLADO
 
 {-
 2. Recursión sobre números
@@ -245,11 +236,15 @@ sumarEdades (x:xs) = edad x + sumarEdades xs
 
 elMasViejo :: [Persona] -> Persona
 --Dada una lista de personas devuelve la persona más vieja de la lista. Precondición: la lista al menos posee una persona.
+elMasViejo [] = error "lista vacia"
 elMasViejo [p] = p
-elMasViejo (p:q:ps) = if ((edad p) > (edad q))  
+elMasViejo (p:q:ps) = if mayorEntre p q  
                       then elMasViejo (p:ps)
                       else elMasViejo (q:ps)
 
+mayorEntre :: Persona -> Persona -> Bool
+mayorEntre p1 p2 = edad p1 > edad p2
+                   
 {-
 2. Modificaremos la representación de Entreador y Pokemon de la práctica anterior de la siguiente manera:-}
 
@@ -283,7 +278,7 @@ cantPokemon (ConsEntrenador n pks) = longitud pks
 ------------------------------------------------------------2.2---------------------------------------------------------------------------
 cantPokemonDe :: TipoDePokemon -> Entrenador -> Int
 --Devuelve la cantidad de Pokémon de determinado tipo que posee el entrenador.
-cantPokemonDe tipo ent = sumarPokemonDe tipo (pokemonesDelEntrenador ent)   
+cantPokemonDe tipo (ConsEntrenador _ pokes) = sumarPokemonDe tipo pokes      --ARREGLADO
 
 sumarPokemonDe :: TipoDePokemon -> [Pokemon] -> Int
 sumarPokemonDe _ [] = 0
@@ -317,34 +312,21 @@ tipo_GanaA_ _ _ = False
 ------------------------------------------------------------2.4---------------------------------------------------------------------------
 esMaestroPokemon :: Entrenador -> Bool
 --Dado un entrenador, devuelve True si posee al menos un Pokémon de cada tipo posible.
-esMaestroPokemon (ConsEntrenador n pks) = hay1DeCadaTipoEn pks
+esMaestroPokemon (ConsEntrenador n pks) = hay1DeCadaTipoEn pks --ARREGLADO
 
 hay1DeCadaTipoEn :: [Pokemon] -> Bool
-hay1DeCadaTipoEn pks = hayUnFuego pks && hayUnAgua pks && hayUnPlanta pks
+hay1DeCadaTipoEn pks = hayUn_ Fuego pks && hayUn_ Agua pks && hayUn_ Planta pks 
 
-hayUnFuego :: [Pokemon] -> Bool
-hayUnFuego [] = False
-hayUnFuego (p:pks) = esFuego_ (tipoDe p) || hayUnFuego pks
+hayUn_ :: TipoDePokemon -> [Pokemon] -> Bool
+--Evalua si existe algun pokemon con el tipo dado 
+hayUn_ t [] = False
+hayUn_ t (x:xs) = esTipo_ t (tipoDe x) || hayUn_ t xs
 
-hayUnAgua :: [Pokemon] -> Bool
-hayUnAgua [] = False
-hayUnAgua (p:pks) = esAgua_ (tipoDe p) || hayUnAgua pks
-
-hayUnPlanta :: [Pokemon] -> Bool
-hayUnPlanta [] = False
-hayUnPlanta (p:pks) = esPlanta_ (tipoDe p) || hayUnPlanta pks
-
-esFuego_ :: TipoDePokemon -> Bool
-esFuego_ Fuego = True
-esFuego_  _ = False
-
-esPlanta_ :: TipoDePokemon -> Bool
-esPlanta_ Planta = True
-esPlanta _ = False
-
-esAgua_ :: TipoDePokemon -> Bool
-esAgua_ Agua = True
-esAgua_ _ = False
+esTipo_ :: TipoDePokemon -> TipoDePokemon -> Bool
+esTipo_ Agua Agua = True
+esTipo_ Fuego Fuego = True
+esTipo_ Planta Planta = True
+esTipo_ _ _ = False
 
 {-3. El tipo de dato Rol representa los roles (desarollo o management) de empleados IT dentro
 de una empresa de software, junto al proyecto en el que se encuentran. Así, una empresa es
@@ -397,23 +379,35 @@ roles = [rol1 , rol2 , rol3]
 proyectosE = [proB]
 empresa = ConsEmpresa roles
 
+seniority :: Rol -> Seniority 
+seniority (Developer s p) = s
+seniority (Management s p) = s
+
 rolDe :: Empresa -> [Rol] --OBSERVADORA
 rolDe (ConsEmpresa p) = p
 
 losDevSenior :: Empresa -> [Proyecto] -> Int
 --Dada una empresa indica la cantidad de desarrolladores senior que posee, que pertecen además a los proyectos dados por parámetro.
-losDevSenior empresa proyectosDeEmpresa = seniorsDe_ConProyecto_ (rolDe empresa) proyectosDeEmpresa
+losDevSenior (ConsEmpresa roles) ps = seniorsDe_ConProyecto_ roles ps
+
+esDevSenior :: Rol -> Bool
+esDevSenior rol = esDev rol && esSenior (seniority rol)
+
+esDev :: Rol -> Bool
+esDev (Developer _ _) = True
+esDev _ = False
+
+esSenior :: Seniority -> Bool
+esSenior Senior = True
+esSenior _ = False
 
 seniorsDe_ConProyecto_ :: [Rol] -> [Proyecto] -> Int
 seniorsDe_ConProyecto_ [] _ = 0
-seniorsDe_ConProyecto_ (r:rs) proyect = if (esSenior r)
+seniorsDe_ConProyecto_ (r:rs) proyect = if (esDevSenior r)
                                         then tiene_ElProyecto_ r proyect + seniorsDe_ConProyecto_ rs proyect
                                         else seniorsDe_ConProyecto_ rs proyect
 
-esSenior :: Rol -> Bool
-esSenior (Management Senior _) = True
-esSenior (Developer Senior _) = True
-esSenior _ = False
+
 
 tiene_ElProyecto_ :: Rol -> [Proyecto] -> Int
                                             -- disyuncionDeProyectos-- asi pertenece al menos a un proyecto de los dados por parametro  

@@ -1,28 +1,3 @@
-{-
-1. Recursión sobre listas
-Dena las siguientes funciones utilizando recursión estructural sobre listas, salvo que se indique
-lo contrario:
-
-2. longitud :: [a] -> Int
-Dada una lista de elementos de algún tipo devuelve el largo de esa lista, es decir, la cantidad
-de elementos que posee.
-3. sucesores :: [Int] -> [Int]
-Dada una lista de enteros, devuelve la lista de los sucesores de cada entero.
-4. conjuncion :: [Bool] -> Bool
-Dada una lista de booleanos devuelve True si todos sus elementos son True.
-5. disyuncion :: [Bool] -> Bool
-Dada una lista de booleanos devuelve True si alguno de sus elementos es True.
-6. aplanar :: [[a]] -> [a]
-Dada una lista de listas, devuelve una única lista con todos sus elementos.
-7. pertenece :: Eq a => a -> [a] -> Bool
-Dados un elemento e y una lista xs devuelve True si existe un elemento en xs que sea igual
-a e.
-8. apariciones :: Eq a => a -> [a] -> Int
-Dados un elemento e y una lista xs cuenta la cantidad de apariciones de e en xs.
-9. losMenoresA :: Int -> [Int] -> [Int]
-Dados un número n y una lista xs, devuelve todos los elementos de xs que son menores a n
--}
-
 --1. sumatoria :: [Int] -> Int
 --Dada una lista de enteros devuelve la suma de todos sus elementos.
 
@@ -88,7 +63,10 @@ sumar1Si False = 0
 
 apariciones :: Eq a => a -> [a] -> Int
 apariciones x [] = 0
-apariciones x (y:ys) = sumar1Si (esIgual x y) + apariciones x ys
+apariciones x (y:ys) = if x == y
+                       then 1 + apariciones x ys
+                       else 0 + apariciones x ys
+
 
 --9. losMenoresA :: Int -> [Int] -> [Int]
 --Dados un número n y una lista xs, devuelve todos los elementos de xs que son menores a n
@@ -117,7 +95,7 @@ devolverSiEsMayorA n x = if longitud x > n
 --lista.
 
 agregarAlFinal :: [a] -> a -> [a]
-agregarAlFinal [] x = []
+agregarAlFinal [] x = [x]
 agregarAlFinal (n:ns) x = n : agregarAlFinal ns x 
 
 --12. agregar :: [a] -> [a] -> [a]
@@ -134,7 +112,8 @@ agregar (x:xs) ys = x : agregar xs ys
 
 reversa :: [a] -> [a]
 reversa [] = []
-reversa (x:xs) = agregar (reversa xs) [x]
+reversa (x:xs) = agregarAlFinal (reversa xs) x --Arreglado en clase
+
 
 
 {-14. zipMaximos :: [Int] -> [Int] -> [Int]
@@ -293,9 +272,26 @@ sumarP _ _ = 0
 
 
 ------------------------------------------------------------2.3---------------------------------------------------------------------------
---cuantosDeTipo_De_LeGananATodosLosDe_ :: TipoDePokemon -> Entrenador -> Entrenador -> Int
+cuantosDeTipo_De_LeGananATodosLosDe_ :: TipoDePokemon -> Entrenador -> Entrenador -> Int
 --Dados dos entrenadores, indica la cantidad de Pokemon de cierto tipo, que le ganarían a los Pokemon del segundo entrenador.
---cuantosDeTipo_De_LeGananATodosLosDe_ tipoBuscado ent ent2 = 
+cuantosDeTipo_De_LeGananATodosLosDe_ tipo (ConsEntrenador n pks) (ConsEntrenador n2 pks2) = 
+                                     longitud (losQueGanan (losDeTipo tipo pks) pks2 )  
+
+losDeTipo :: TipoDePokemon -> [Pokemon] -> [Pokemon]
+losDeTipo _ [] = []
+losDeTipo tipo (x:xs) = if esTipo_ tipo (tipoDe x)
+                        then x : losDeTipo tipo xs
+                        else losDeTipo tipo xs 
+
+losQueGanan :: [Pokemon] -> [Pokemon] -> [Pokemon]
+losQueGanan [] _ = []
+losQueGanan (x:xs) pks2 = if leGanaATodosDe x pks2 
+                          then x : losQueGanan xs pks2
+                          else losQueGanan xs pks2
+
+leGanaATodosDe :: Pokemon -> [Pokemon] -> Bool
+leGanaATodosDe _ [] = True
+leGanaATodosDe x (p:ps) = superaA x p && leGanaATodosDe x ps  
 
 tipo_GanaA_ :: TipoDePokemon -> TipoDePokemon -> Bool
 tipo_GanaA_ Agua Fuego = True
@@ -304,10 +300,10 @@ tipo_GanaA_ Planta Agua = True
 tipo_GanaA_ _ _ = False
 --FUNC SUBTAREA PARA superaA, dados 2 tipos devuelve un bool si el primero vence al segundo
 
-----superaA :: Pokemon -> Pokemon -> Bool
+superaA :: Pokemon -> Pokemon -> Bool
 --Dados dos Pokémon indica si el primero, en base al tipo, es superior al segundo. Agua
 --supera a fuego, fuego a planta y planta a agua. Y cualquier otro caso es falso.
---superaA (Poke t e) (Poke t2 e2) = tipo_GanaA_ t t2
+superaA (ConsPokemon t e) (ConsPokemon t2 e2) = tipo_GanaA_ t t2
 
 ------------------------------------------------------------2.4---------------------------------------------------------------------------
 esMaestroPokemon :: Entrenador -> Bool

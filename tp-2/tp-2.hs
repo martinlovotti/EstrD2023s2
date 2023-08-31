@@ -28,7 +28,7 @@ sucesores (n:ns) = sucesor n : sucesores ns
 --Dada una lista de booleanos devuelve True si todos sus elementos son True.
 
 conjuncion :: [Bool] -> Bool
-conjuncion [] = False
+conjuncion [] = True --true
 conjuncion (x:xs) = x && conjuncion xs --ARREGLADO
 
 --5.disyuncion :: [Bool] -> Bool
@@ -52,7 +52,7 @@ esIgual x y = x==y
 pertenece :: Eq a => a -> [a] -> Bool
 pertenece x [] = False
 pertenece x (y:ys) = if x == y
-                     then True || pertenece x ys
+                     then True 
                      else pertenece x ys         --ARREGLADO
 
 --8 apariciones :: Eq a => a -> [a] -> Int
@@ -217,12 +217,12 @@ elMasViejo :: [Persona] -> Persona
 --Dada una lista de personas devuelve la persona más vieja de la lista. Precondición: la lista al menos posee una persona.
 elMasViejo [] = error "lista vacia"
 elMasViejo [p] = p
-elMasViejo (p:q:ps) = if mayorEntre p q  
-                      then elMasViejo (p:ps)
-                      else elMasViejo (q:ps)
+elMasViejo (p:ps) = if edad p > edad (head (ps)) 
+                    then elMasViejo (p: tail (ps)) 
+                    else elMasViejo (head(ps): tail (ps))
 
 mayorEntre :: Persona -> Persona -> Bool
-mayorEntre p1 p2 = edad p1 > edad p2
+mayorEntre p1 p2 = edad p1 > edad p2 
                    
 {-
 2. Modificaremos la representación de Entreador y Pokemon de la práctica anterior de la siguiente manera:-}
@@ -367,8 +367,8 @@ proA = ConsProyecto "Proyecto A"
 proB = ConsProyecto "Proyecto B"
 proC = ConsProyecto "Proyecto C"
 proD = ConsProyecto "Proyecto D"
-rol1 = Developer Junior proB
-rol2 = Developer Junior proB
+rol1 = Developer Senior proB
+rol2 = Developer Senior proB
 rol3 = Developer Senior proB
 
 roles = [rol1 , rol2 , rol3]
@@ -399,17 +399,14 @@ esSenior _ = False
 
 seniorsDe_ConProyecto_ :: [Rol] -> [Proyecto] -> Int
 seniorsDe_ConProyecto_ [] _ = 0
-seniorsDe_ConProyecto_ (r:rs) proyect = if (esDevSenior r)
-                                        then tiene_ElProyecto_ r proyect + seniorsDe_ConProyecto_ rs proyect
+seniorsDe_ConProyecto_ (r:rs) proyect = if (esDevSenior r && tiene_ElProyecto_ r proyect)
+                                        then 1 + seniorsDe_ConProyecto_ rs proyect
                                         else seniorsDe_ConProyecto_ rs proyect
 
-
-
-tiene_ElProyecto_ :: Rol -> [Proyecto] -> Int
+tiene_ElProyecto_ :: Rol -> [Proyecto] -> Bool
                                             -- disyuncionDeProyectos-- asi pertenece al menos a un proyecto de los dados por parametro  
-tiene_ElProyecto_ rol todosLosProyectos = if (disyuncionDeProyectos (proyectoDe rol) todosLosProyectos)
-                                then 1
-                                else 0 
+tiene_ElProyecto_ rol todosLosProyectos = disyuncionDeProyectos (proyectoDe rol) todosLosProyectos
+                                
 
 disyuncionDeProyectos :: Proyecto -> [Proyecto] -> Bool 
 disyuncionDeProyectos _ [] = False

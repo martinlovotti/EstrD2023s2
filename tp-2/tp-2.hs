@@ -217,12 +217,15 @@ elMasViejo :: [Persona] -> Persona
 --Dada una lista de personas devuelve la persona más vieja de la lista. Precondición: la lista al menos posee una persona.
 elMasViejo [] = error "lista vacia"
 elMasViejo [p] = p
-elMasViejo (p:ps) = if edad p > edad (head (ps)) 
-                    then elMasViejo (p: tail (ps)) 
-                    else elMasViejo (head(ps): tail (ps))
+elMasViejo (p:ps) = laQueEsMayor p (elMasViejo ps)
 
-mayorEntre :: Persona -> Persona -> Bool
-mayorEntre p1 p2 = edad p1 > edad p2 
+esMayorQueLaOtra :: Persona -> Persona -> Bool
+esMayorQueLaOtra p1 p2 = edad p1 > edad p2
+
+laQueEsMayor :: Persona -> Persona -> Persona
+laQueEsMayor p1 p2 = if esMayorQueLaOtra p1 p2
+                        then p1
+                        else p2                   
                    
 {-
 2. Modificaremos la representación de Entreador y Pokemon de la práctica anterior de la siguiente manera:-}

@@ -378,12 +378,17 @@ roles = [rol1 , rol2 , rol3]
 proyectosE = [proB]
 empresa = ConsEmpresa roles
 
+proyectoDeRol :: Rol -> Proyecto
+proyectoDeRol (Developer s p) = p
+proyectoDeRol (Management s p) = p
+
 seniority :: Rol -> Seniority 
 seniority (Developer s p) = s
 seniority (Management s p) = s
 
 rolDe :: Empresa -> [Rol] --OBSERVADORA
 rolDe (ConsEmpresa p) = p
+
 
 losDevSenior :: Empresa -> [Proyecto] -> Int
 --Dada una empresa indica la cantidad de desarrolladores senior que posee, que pertecen además a los proyectos dados por parámetro.
@@ -433,10 +438,16 @@ proyectos_ConRol_ losProyectos (x:xs) = if disyuncionDeProyectos (proyectoDe x) 
                                         then 1 + proyectos_ConRol_ losProyectos xs
                                         else 0 + proyectos_ConRol_ losProyectos xs
 
-asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
---Devuelve una lista de pares que representa a los proyectos (sin repetir) junto con su cantidad de personas involucradas.
-asignadosPorProyecto empr = cantidadPorRol empr (proyectos empr)
 
-cantidadPorRol :: Empresa -> [Proyecto] -> [(Proyecto, Int)]
-cantidadPorRol empr []     = []
-cantidadPorRol empr (x:xs) = (x, cantQueTrabajanEn [x] empr) : cantidadPorRol empr xs
+agregarProyectoAListaDePares :: Proyecto -> [(Proyecto, Int)] -> [(Proyecto, Int)]
+agregarProyectoAListaDePares p [] = [(p, 1)]
+agregarProyectoAListaDePares p ((pj,n) : pjns) = if es_DelProyecto_ p (nombreProyecto pj) 
+                                                        then (pj, n + 1) : pjns
+                                                        else (pj, n) : agregarProyectoAListaDePares p pjns
+
+cantEmpleadosAsignadosPorProyecto :: [Rol] -> [(Proyecto, Int)]
+cantEmpleadosAsignadosPorProyecto [] = []
+cantEmpleadosAsignadosPorProyecto (r:rls) = agregarProyectoAListaDePares (proyectoDeRol r) (cantEmpleadosAsignadosPorProyecto rls)
+
+asignadosPorProyecto :: Empresa -> [(Proyecto, Int)]
+asignadosPorProyecto e = cantEmpleadosAsignadosPorProyecto (rolDe e)

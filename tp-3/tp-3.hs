@@ -87,7 +87,7 @@ alMenosNTesoros 0 _ = True
 alMenosNTesoros _ Fin = False
 alMenosNTesoros n (Nada cm) = alMenosNTesoros n cm
 alMenosNTesoros n (Cofre objs cm) = alMenosNTesoros (n - cantTesorosEnLista objs) cm
-----------------------------------------------------cuando llega a 0 es true 
+
 cantTesorosEnLista :: [Objeto] -> Int
 cantTesorosEnLista [] = 0
 cantTesorosEnLista (obj:objs) = unoSiCeroSino(esTesoro obj) + cantTesorosEnLista objs
@@ -115,7 +115,6 @@ subCaminoHasta 0 _ = Fin
 subCaminoHasta _ Fin = Fin
 subCaminoHasta n (Nada cm) = Nada (subCaminoHasta (n-1) cm)
 subCaminoHasta n (Cofre objs cm) = Cofre objs (subCaminoHasta (n-1) cm)
-
 
 data Tree a = EmptyT | NodeT a (Tree a) (Tree a)
         deriving Show

@@ -119,6 +119,30 @@ subCaminoHasta n (Cofre objs cm) = Cofre objs (subCaminoHasta (n-1) cm)
 data Tree a = EmptyT | NodeT a (Tree a) (Tree a)
         deriving Show
 
+tree1 :: Tree Int
+tree1 = NodeT 1 (NodeT 1 (NodeT 2 EmptyT EmptyT) EmptyT) EmptyT
+
+tree2 :: Tree Int
+tree2 = NodeT 1
+        (NodeT 1 (NodeT 2 EmptyT EmptyT)
+        (NodeT 2 EmptyT EmptyT)) EmptyT
+
+tree3 :: Tree Int
+tree3 = NodeT 10
+        (NodeT 20 (NodeT 40 EmptyT EmptyT) (NodeT 50 EmptyT EmptyT))
+        (NodeT 30 (NodeT 40 EmptyT EmptyT) (NodeT 50 EmptyT EmptyT))
+
+tree4 :: Tree Char
+tree4 = NodeT 'a'
+          (NodeT 'b'
+           (NodeT 'd' EmptyT EmptyT) EmptyT)
+          (NodeT 'c'
+           (NodeT 'e'
+            EmptyT
+            (NodeT 'g' EmptyT EmptyT))
+           (NodeT 'f'
+            (NodeT 'h' EmptyT EmptyT)
+            (NodeT 'i' EmptyT EmptyT)))
 -- Árboles binarios --
 ---------------------------------------------sumarT
 sumarT :: Tree Int -> Int
@@ -148,13 +172,11 @@ aparicionesT x1 (NodeT x2 lt rt) = unoSiCeroSino(x1 == x2) + aparicionesT x1 lt 
 ---------------------------------------------leaves
 leaves :: Tree a -> [a]
 leaves EmptyT = []
-leaves (NodeT x EmptyT EmptyT) = [x]
-leaves (NodeT x lt rt) = leaves lt ++ leaves rt
+leaves (NodeT x lt rt) = x : leaves lt ++ leaves rt
 
 ---------------------------------------------heightT
 heightT :: Tree a -> Int
 heightT EmptyT = 0
-heightT (NodeT _ EmptyT EmptyT) = 1
 heightT (NodeT _ lt rt) = 1 + max (heightT lt) (heightT rt)
 
 ---------------------------------------------mirrorT

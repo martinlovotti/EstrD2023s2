@@ -174,9 +174,12 @@ aparicionesT x1 (NodeT x2 lt rt) = unoSiCeroSino(x1 == x2) + aparicionesT x1 lt 
 ---------------------------------------------leaves
 leaves :: Tree a -> [a]
 leaves EmptyT = []
-leaves (NodeT x lt rt) = if (esEmpty lt) && (esEmpty rt) 
+leaves (NodeT x lt rt) = if esLeave lt rt
                          then [x] 
                          else leaves lt ++ leaves rt 
+
+esLeave :: Tree a -> Tree a -> Bool
+esLeave lt rt = esEmpty lt && esEmpty rt
 
 esEmpty :: Tree a -> Bool
 esEmpty EmptyT = True

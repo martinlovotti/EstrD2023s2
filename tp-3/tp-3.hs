@@ -119,6 +119,8 @@ subCaminoHasta n (Cofre objs cm) = Cofre objs (subCaminoHasta (n-1) cm)
 data Tree a = EmptyT | NodeT a (Tree a) (Tree a)
         deriving Show
 
+treE = EmptyT
+
 tree1 :: Tree Int
 tree1 = NodeT 1 (NodeT 1 (NodeT 2 EmptyT EmptyT) EmptyT) EmptyT
 
@@ -130,7 +132,7 @@ tree2 = NodeT 1
 tree3 :: Tree Int
 tree3 = NodeT 10
         (NodeT 20 (NodeT 40 EmptyT EmptyT) (NodeT 50 EmptyT EmptyT))
-        (NodeT 30 (NodeT 40 EmptyT EmptyT) (NodeT 50 EmptyT EmptyT))
+        (NodeT 30 (NodeT 70 EmptyT EmptyT) (NodeT 70 EmptyT EmptyT))
 
 tree4 :: Tree Char
 tree4 = NodeT 'a'
@@ -172,8 +174,13 @@ aparicionesT x1 (NodeT x2 lt rt) = unoSiCeroSino(x1 == x2) + aparicionesT x1 lt 
 ---------------------------------------------leaves
 leaves :: Tree a -> [a]
 leaves EmptyT = []
-leaves (NodeT x lt rt) = x : leaves lt ++ leaves rt
+leaves (NodeT x lt rt) = if (esEmpty lt) && (esEmpty rt) 
+                         then [x] 
+                         else leaves lt ++ leaves rt 
 
+esEmpty :: Tree a -> Bool
+esEmpty EmptyT = True
+esEmpty _ = False
 ---------------------------------------------heightT
 heightT :: Tree a -> Int
 heightT EmptyT = 0

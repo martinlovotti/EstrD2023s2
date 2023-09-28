@@ -22,7 +22,7 @@ pertenece e (x:xs) = e == x || pertenece e xs
 
 cantidadDeCapas :: Pizza -> Int
 cantidadDeCapas Prepizza   = 0
-cantidadDeCapas (Capa i p) = unoSi (esIngrediente i) + cantidadDeCapas p
+cantidadDeCapas (Capa _ p) = 1 + cantidadDeCapas p --arreglado
 
 esIngrediente :: Ingrediente -> Bool
 esIngrediente Salsa         = True
@@ -42,7 +42,7 @@ armarPizza (i:is) = Capa i (armarPizza is)
 sacarJamon :: Pizza -> Pizza
 sacarJamon Prepizza   = Prepizza
 sacarJamon (Capa i p) = if esJamon i
-                        then p
+                        then sacarJamon p --ahora sigue con la recursion
                         else Capa i (sacarJamon p)
 
 esJamon :: Ingrediente -> Bool
@@ -64,8 +64,11 @@ tieneSalsaOQueso _     = False
 
 duplicarAceitunas :: Pizza -> Pizza
 duplicarAceitunas Prepizza               = Prepizza
-duplicarAceitunas (Capa (Aceitunas n) p) = Capa (Aceitunas (n*2)) p
-duplicarAceitunas (Capa i p)             = Capa i (duplicarAceitunas p)
+duplicarAceitunas (Capa i p)             = (Capa (siEsAceitunaDuplicar i) (duplicarAceitunas p))
+
+siEsAceitunaDuplicar :: Ingrediente -> Ingrediente
+siEsAceitunaDuplicar (Aceitunas cant) = Aceitunas (cant*2)
+siEsAceitunaDuplicar ig = ig
 
 {---------- Ejercicio 6 ---------------------------------------------}
 
@@ -104,7 +107,6 @@ tieneTesoro (Cofre []) = False
 tieneTesoro (Cofre c)  = tieneTesoro' c
 
 tieneTesoro' :: [Objeto] -> Bool
-tieneTesoro' []     = False
 tieneTesoro' (o:os) = esTesoro o || tieneTesoro' os
 
 esTesoro :: Objeto -> Bool
@@ -114,14 +116,11 @@ esTesoro _      = False
 {---------- Ejercicio 2 ---------------------------------------------}
 
 hayTesoroEn :: [Dir] -> Mapa -> Bool
-hayTesoroEn _ (Fin c) = tieneTesoro c
+hayTesoroEn [] (Fin c) = tieneTesoro c
 hayTesoroEn [] (Bifurcacion c _ _) = tieneTesoro c
-hayTesoroEn (d:ds) mp = tesoroEnDs d mp || hayTesoroEn ds mp
-
-tesoroEnDs :: Dir -> Mapa -> Bool
---el caso base ya lo pregunté en la f principal
-tesoroEnDs d (Bifurcacion x m1 m2) = if esIzq d then hayTesoro m1 
-                                                else hayTesoro m2
+hayTesoroEn (d:ds) (Bifurcacion c m1 m2) = if esIzq d
+                                            then hayTesoroEn ds m1
+                                            else hayTesoroEn ds m2
 
 esIzq :: Dir -> Bool
 esIzq Izq = True
@@ -132,22 +131,72 @@ esIzq _ = False
 caminoAlTesoro :: Mapa -> [Dir]
 --Indica el camino al tesoro. Precondición: existe un tesoro y es único.
 caminoAlTesoro (Fin _) = [] 
-caminoAlTesoro (Bifurcacion c m1 m2) = if hayTesoro m1
-                                         then Izq : caminoAlTesoro m1
-                                         else Der : caminoAlTesoro m2
+caminoAlTesoro (Bifurcacion c m1 m2) = if tieneTesoro c
+                                       then []
+                                       else 
+                                           if hayTesoro m1
+                                           then Izq : caminoAlTesoro m1
+                                           else Der : caminoAlTesoro m2
 
 {---------- Ejercicio 4 ---------------------------------------------}
+ejMapa2 = Bifurcacion (Cofre [Chatarra])
+                    (Bifurcacion (Cofre [Chatarra,Chatarra]) 
+                        (Bifurcacion (Cofre [Chatarra,Chatarra,Chatarra])
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                        )
+                        (Bifurcacion (Cofre [Chatarra,Chatarra,Chatarra])
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                        )
+                    )
+                    (Bifurcacion (Cofre [Chatarra,Chatarra]) 
+                        (Bifurcacion (Cofre [Chatarra,Chatarra,Chatarra])
+                            (Fin (Cofre [Chatarra, Chatarra, Tesoro, Chatarra]))
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                        )
+                        (Bifurcacion (Cofre [Chatarra,Chatarra,Chatarra])
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                        )
+                    )
+
+ejMapa3 = Bifurcacion (Cofre [Tesoro])                                                                                
+                    (Bifurcacion (Cofre [Tesoro,Chatarra]) 
+                        (Bifurcacion (Cofre [Chatarra,Chatarra,Chatarra])
+                            (Bifurcacion (Cofre [Chatarra, Chatarra, Chatarra, Chatarra])
+                                (Fin (Cofre []))
+                                (Fin (Cofre [])))
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                        )
+                        (Bifurcacion (Cofre [Chatarra,Chatarra,Chatarra])
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                        )
+                    )
+                    (Bifurcacion (Cofre [Tesoro,Chatarra]) 
+                        (Bifurcacion (Cofre [Chatarra,Chatarra,Chatarra])
+                            (Fin (Cofre [Chatarra, Chatarra, Tesoro, Chatarra]))
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                        )
+                        (Bifurcacion (Cofre [Chatarra,Chatarra,Chatarra])
+                            (Fin (Cofre [Chatarra, Chatarra, Tesoro, Chatarra]))
+                            (Fin (Cofre [Chatarra, Chatarra, Chatarra, Chatarra]))
+                        )
+                    )
+                    
+
 caminoDeLaRamaMasLarga :: Mapa -> [Dir]
 --Indica el camino de la rama más larga.
 caminoDeLaRamaMasLarga (Fin _) = []
-caminoDeLaRamaMasLarga (Bifurcacion _ m1 m2) = if not (esFin m1) 
-                                                 then Izq : caminoDeLaRamaMasLarga m1
-                                                 else porDerecha m2
-porDerecha :: Mapa -> [Dir]
-porDerecha m2 = if not (esFin m2) 
-                then Der : caminoDeLaRamaMasLarga m2
-                else []
-
+caminoDeLaRamaMasLarga (Bifurcacion _ m1 m2) = direccionDe m1  ++ caminoDeLaRamaMasLarga m2 ++ caminoDeLaRamaMasLarga m1
+                                                 
+direccionDe :: Mapa -> [Dir]
+direccionDe (Fin _) = []
+direccionDe (Bifurcacion _ m1 m2) = if not (esFin m1) 
+                                    then [Izq]
+                                    else [Der]
+            
 esFin :: Mapa -> Bool
 esFin (Fin _) = True
 esFin _ = False
@@ -177,7 +226,7 @@ losTesoros (o:os) = if esTesoro o then o : losTesoros os
 todosLosCaminos :: Mapa -> [[Dir]]
 --Devuelve todos lo caminos en el mapa.
 todosLosCaminos (Fin _) = []
-todosLosCaminos (Bifurcacion _ m1 m2) = consACada Izq (todosLosCaminos m1)
+todosLosCaminos (Bifurcacion _ m1 m2) = direccionDe m1 : consACada Izq (todosLosCaminos m1)
                                      ++ consACada Der (todosLosCaminos m2)
 
 

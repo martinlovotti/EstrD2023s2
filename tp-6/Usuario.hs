@@ -1,7 +1,7 @@
-import PriorityQueue -- PriorityQueue, emptyPQ, isEmptyPQ, insertPQ, findMinPQ, deleteMinPQ
-import MapV3 -- Map, emptyM, assocM, lookupM, deleteM, keys
-import MultiSet -- MultiSet, emptyMS, addMS, ocurrencesMS, unionMS, intersectionMS, multiSetToList
-import SetV1
+--import PriorityQueue -- PriorityQueue, emptyPQ, isEmptyPQ, insertPQ, findMinPQ, deleteMinPQ
+import MapV1 -- Map, emptyM, assocM, lookupM, deleteM, keys
+--import MultiSet -- MultiSet, emptyMS, addMS, ocurrencesMS, unionMS, intersectionMS, multiSetToList
+--import SetV1
 --
 
 -- O(n^2) ya que aplica findMinPQ y deleteMinPQ [ambas O(n)] para cada elemento en la PQ (misma cantidad que la lista)
@@ -18,6 +18,11 @@ heapSort :: Ord a => [a] -> [a]
 heapSort xs = priorityQueueToList (listToPriorityQueue xs)
 
 --
+jus :: Map a b -> i -> Maybe b
+jus m i = case lookupM i m of
+         Just s -> s
+         Nothing -> error "no hay valor dado" 
+
 
 ejMap :: Map String Int
 ejMap = assocM "4" 4
